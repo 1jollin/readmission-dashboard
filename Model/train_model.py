@@ -20,6 +20,7 @@ from sklearn.metrics import (
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "diabetic_data.csv")
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "model.pkl")
+METRICS_PATH = os.path.join(os.path.dirname(__file__), "metrics.pkl")
 
 # Features to use — adjust based on what you find during EDA
 FEATURE_COLS = [
@@ -96,6 +97,22 @@ def main():
         MODEL_PATH,
     )
     print(f"\nModel saved to {MODEL_PATH}")
+
+    # Save test-set results so the Model Performance page can display them
+    # without needing to retrain the model itself.
+    joblib.dump(
+        {
+            "y_test": y_test.to_numpy(),
+            "preds": preds,
+            "probs": probs,
+            "accuracy": accuracy_score(y_test, preds),
+            "roc_auc": roc_auc_score(y_test, probs),
+            "confusion_matrix": confusion_matrix(y_test, preds),
+            "feature_importance": list(zip(FEATURE_COLS, model.feature_importances_)),
+        },
+        METRICS_PATH,
+    )
+    print(f"Metrics saved to {METRICS_PATH}")
 
 
 if __name__ == "__main__":
