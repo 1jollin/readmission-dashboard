@@ -56,5 +56,8 @@ def get_feature_importance():
     bundle = _load_bundle()
     model = bundle["model"]
     features = bundle["features"]
-    importances = model.feature_importances_
+    if hasattr(model, "feature_importances_"):
+        importances = model.feature_importances_
+    else:
+        importances = abs(model.coef_[0])
     return sorted(zip(features, importances), key=lambda x: -x[1])

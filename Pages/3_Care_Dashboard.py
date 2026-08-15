@@ -40,12 +40,13 @@ DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "diabetic_data
 def load_sample_patients(n=50):
     """Load a sample of real patients if the dataset exists, else generate dummy rows."""
     if os.path.exists(DATA_PATH):
-        df = pd.read_csv(DATA_PATH)
-        df = df.replace("?", np.nan)
+        df = pd.read_csv(DATA_PATH, keep_default_na=False, na_values=["?"])
         cols = [
-            "age", "time_in_hospital", "num_lab_procedures", "num_procedures",
+            "age", "race", "gender", "time_in_hospital", "num_lab_procedures", "num_procedures",
             "num_medications", "number_outpatient", "number_emergency",
-            "number_inpatient", "number_diagnoses", "insulin", "change", "diabetesMed",
+            "number_inpatient", "number_diagnoses", "admission_type_id",
+            "discharge_disposition_id", "admission_source_id",
+            "max_glu_serum", "A1Cresult", "insulin", "change", "diabetesMed",
         ]
         df = df[cols].dropna().sample(n=min(n, len(df)), random_state=1).reset_index(drop=True)
         return df
@@ -56,6 +57,8 @@ def load_sample_patients(n=50):
         for i in range(n):
             rows.append({
                 "age": random.choice(ages),
+                "race": random.choice(["Caucasian", "AfricanAmerican", "Hispanic", "Asian", "Other"]),
+                "gender": random.choice(["Female", "Male"]),
                 "time_in_hospital": random.randint(1, 14),
                 "num_lab_procedures": random.randint(1, 100),
                 "num_procedures": random.randint(0, 6),
@@ -64,6 +67,11 @@ def load_sample_patients(n=50):
                 "number_emergency": random.randint(0, 3),
                 "number_inpatient": random.randint(0, 4),
                 "number_diagnoses": random.randint(1, 16),
+                "admission_type_id": random.randint(1, 8),
+                "discharge_disposition_id": random.choice([1, 2, 3, 6, 22]),
+                "admission_source_id": random.choice([1, 4, 7, 17]),
+                "max_glu_serum": random.choice(["None", "Norm", ">200", ">300"]),
+                "A1Cresult": random.choice(["None", "Norm", ">7", ">8"]),
                 "insulin": random.choice(["No", "Steady", "Up", "Down"]),
                 "change": random.choice(["No", "Ch"]),
                 "diabetesMed": random.choice(["Yes", "No"]),
