@@ -57,7 +57,13 @@ else:
 
     st.divider()
     st.subheader("Dataset Preview")
-    st.dataframe(df.head(20), use_container_width=True)
+    preview_df = df.head(20).rename(columns={"time_in_hospital": "time_in_hospital (days)"})
+    st.dataframe(preview_df, use_container_width=True)
+    st.caption(
+        "Note: `?` means that value wasn't recorded for that patient — common in real hospital "
+        "data. Columns like `payer_code` and `medical_specialty` are missing for roughly "
+        "40–50% of patients and aren't used by the model for that reason."
+    )
 
 st.divider()
 st.markdown(
